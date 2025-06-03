@@ -16,7 +16,6 @@ const byte T_ADDRESS[6] = "1RF24";
 #define J_PIN_B A1
 
 uint16_t JYAxisInput;
-byte JYAxisTransfer;
 bool ButtonPressed;
 
 // The data transfer array
@@ -58,9 +57,7 @@ void loop() {
     JYAxisInput = analogRead(J_PIN_Y);
     ButtonPressed = analogRead(J_PIN_B) <= 100;
 
-    JYAxisTransfer = map(JYAxisInput, 0, 1023, 0, 255);
-
-    JTransfer[0] = JYAxisTransfer;
+    JTransfer[0] = JYAxisInput;
     JTransfer[1] = ButtonPressed;
 
     // Writing one (first) byte to the radio channel
@@ -74,9 +71,6 @@ void loop() {
 void PrintData() {
     Serial.print("[+]-< Joystick Y-axis input: ");
     Serial.println(JYAxisInput);
-    Serial.print("[+]-< Joystick Y-axis transfer: ");
-    Serial.println(JYAxisTransfer);
-    Serial.println(" |");
     Serial.print("[+]-< Joystick button signal: ");
     Serial.println(ButtonPressed);
     Serial.println(" |");
