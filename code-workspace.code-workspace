@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "ArmReader",
+			"path": "ArmReader"
+		},
+		{
+			"name": "ArmWriter",
+			"path": "ArmWriter"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
