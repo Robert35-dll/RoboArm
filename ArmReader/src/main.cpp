@@ -10,6 +10,26 @@
 RF24 Transmitter(CE_PIN, CSN_PIN);
 const byte T_ADDRESS[6] = "1RF24";
 
+// MPU6050's libraries
+#include <MPU6050_tockn.h>
+#include <Wire.h>
+
+// The MPUs' mute pins
+#define UPPER_MPU_ADO 2
+#define LOWER_MPU_ADO 3
+
+const int AnglesAmount = 3;
+// Arrays for MPUs' values
+int UpperMPUAngles[AnglesAmount];
+int LowerMPUAngles[AnglesAmount];
+// and their pointers (why not :3)
+int (*UpperAnglesPtr)[AnglesAmount] = &UpperMPUAngles;
+int (*LowerAnglesPtr)[AnglesAmount] = &LowerMPUAngles;
+
+// The MPU module Arduino's currently listening to
+MPU6050 ActiveMPU(Wire);
+MPU6050 *ActiveMPUPtr = &ActiveMPU; 
+
 // The joystick's vertical axis' pin
 #define J_PIN_Y A0
 // The joystick's toggle button pin
@@ -21,12 +41,26 @@ bool ButtonPressed;
 // The data transfer array
 byte JTransfer[2];
 
+void GetAngles(int, int (*)[3]);
 void PrintData();
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
-    // Joystick setup
+    Serial.println("[AR]-< Started initialization");
+    pinMode(UPPER_MPU_ADO, OUTPUT);
+    pinMode(LOWER_MPU_ADO, OUTPUT);
+    // Muting one of the MPUs for initializing
+    digitalWrite(UPPER_MPU_ADO, HIGH);
+    digitalWrite(LOWER_MPU_ADO, LOW);
+
+    // Initializing and calibrating the active MPU module 
+    Serial.println("[*]-< Initializing MPU monitoring object");
+    Wire.begin();
+    ActiveMPU.begin();
+    ActiveMPU.calcGyroOffsets();
+
+    // // Joystick setup
     pinMode(J_PIN_Y, INPUT);
     pinMode(J_PIN_B, INPUT);
 
@@ -54,6 +88,11 @@ void setup() {
 }
 
 void loop() {
+    // Reading angles of the arm
+    GetAngles(LOWER_MPU_ADO, UpperAnglesPtr);
+    GetAngles(UPPER_MPU_ADO, LowerAnglesPtr);
+    // TODO: Packing them into the transfer array
+
     JYAxisInput = analogRead(J_PIN_Y);
     ButtonPressed = analogRead(J_PIN_B) <= 100;
 
@@ -66,6 +105,21 @@ void loop() {
     }
 
     delay(1000);
+}
+
+void GetAngles(int mutePin, int (*angleArrPtr)[3]) {
+    // Muting the given (other) MPU module
+    digitalWrite(mutePin, HIGH);
+
+    // Updating the data of currently active one
+    (*ActiveMPUPtr).update();
+
+    (*angleArrPtr)[0] = (*ActiveMPUPtr).getGyroAngleX();
+    (*angleArrPtr)[1] = (*ActiveMPUPtr).getGyroAngleY();
+    (*angleArrPtr)[2] = (*ActiveMPUPtr).getGyroAngleZ();
+
+    // Activating the muted MPU back 
+    digitalWrite(mutePin, LOW);
 }
 
 void PrintData() {
