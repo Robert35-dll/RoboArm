@@ -37,7 +37,7 @@ bool ButtonPressed;
 // The data transfer array
 byte JTransfer[2];
 
-void GetAngles(int, int (*)[3]);
+void GetAngles(int, int , int (*)[3]);
 void PrintData();
 
 void setup() {
@@ -56,7 +56,7 @@ void setup() {
     ActiveMPU.begin();
     ActiveMPU.calcGyroOffsets();
 
-    // // Joystick setup
+    // Joystick setup
     pinMode(J_PIN_Y, INPUT);
     pinMode(J_PIN_B, INPUT);
 
@@ -85,8 +85,8 @@ void setup() {
 
 void loop() {
     // Reading angles of the arm
-    GetAngles(LOWER_MPU_ADO, UpperAnglesPtr);
-    GetAngles(UPPER_MPU_ADO, LowerAnglesPtr);
+    GetAngles(LOWER_MPU_ADO, UPPER_MPU_ADO, &UpperMPUAngles);
+    GetAngles(UPPER_MPU_ADO, LOWER_MPU_ADO, &LowerMPUAngles);
     // TODO: Packing them into the transfer array
 
     JYAxisInput = analogRead(J_PIN_Y);
@@ -103,9 +103,12 @@ void loop() {
     delay(1000);
 }
 
-void GetAngles(int mutePin, int (*angleArrPtr)[3]) {
+void GetAngles(int mutePin, int unMutePin, int (*angleArrPtr)[3]) {
     // Muting the given (other) MPU module
     digitalWrite(mutePin, HIGH);
+    digitalWrite(unMutePin, LOW);
+
+    delay(1000);
 
     // Updating the data of currently active one
     ActiveMPU.update();
@@ -127,7 +130,7 @@ void GetAngles(int mutePin, int (*angleArrPtr)[3]) {
     Serial.println(" |");
 
     // Activating the muted MPU back 
-    digitalWrite(mutePin, LOW);
+    digitalWrite(unMutePin, HIGH);
 }
 
 void PrintData() {
