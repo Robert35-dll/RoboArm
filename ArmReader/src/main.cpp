@@ -131,6 +131,24 @@ void GetAngles(int mutePin, int (*angleArrPtr)[3]) {
 }
 
 void PrintData() {
+    Serial.print("[+]-< Upper MPU angles: ");
+    Serial.print("X: ");
+    Serial.print(UpperMPUAngles[0]);
+    Serial.print(" Y: ");
+    Serial.print(UpperMPUAngles[1]);
+    Serial.print(" Z: ");
+    Serial.println(UpperMPUAngles[2]);
+    Serial.println(" |");
+
+    Serial.print("[+]-< Lower MPU angles: ");
+    Serial.print("X: ");
+    Serial.print(LowerMPUAngles[0]);
+    Serial.print(" Y: ");
+    Serial.print(LowerMPUAngles[1]);
+    Serial.print(" Z: ");
+    Serial.println(LowerMPUAngles[2]);
+    Serial.println(" |");
+
     Serial.print("[+]-< Joystick Y-axis input: ");
     Serial.println(JYAxisInput);
     Serial.print("[+]-< Joystick button signal: ");
