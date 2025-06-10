@@ -22,13 +22,9 @@ const int AnglesAmount = 3;
 // Arrays for MPUs' values
 int UpperMPUAngles[AnglesAmount];
 int LowerMPUAngles[AnglesAmount];
-// and their pointers (why not :3)
-int (*UpperAnglesPtr)[AnglesAmount] = &UpperMPUAngles;
-int (*LowerAnglesPtr)[AnglesAmount] = &LowerMPUAngles;
 
 // The MPU module Arduino's currently listening to
 MPU6050 ActiveMPU(Wire);
-MPU6050 *ActiveMPUPtr = &ActiveMPU; 
 
 // The joystick's vertical axis' pin
 #define J_PIN_Y A0
@@ -112,11 +108,23 @@ void GetAngles(int mutePin, int (*angleArrPtr)[3]) {
     digitalWrite(mutePin, HIGH);
 
     // Updating the data of currently active one
-    (*ActiveMPUPtr).update();
+    ActiveMPU.update();
 
-    (*angleArrPtr)[0] = (*ActiveMPUPtr).getGyroAngleX();
-    (*angleArrPtr)[1] = (*ActiveMPUPtr).getGyroAngleY();
-    (*angleArrPtr)[2] = (*ActiveMPUPtr).getGyroAngleZ();
+    int x = ActiveMPU.getGyroAngleX();
+    int y = ActiveMPU.getGyroAngleY();
+    int z = ActiveMPU.getGyroAngleZ();
+
+    (*angleArrPtr)[0] = x;
+    (*angleArrPtr)[1] = y;
+    (*angleArrPtr)[2] = z;
+
+    Serial.print(" |-< X: ");
+    Serial.print(x);
+    Serial.print(" Y: ");
+    Serial.print(y);
+    Serial.print(" Z: ");
+    Serial.println(z);
+    Serial.println(" |");
 
     // Activating the muted MPU back 
     digitalWrite(mutePin, LOW);
