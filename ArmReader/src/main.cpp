@@ -26,8 +26,8 @@ const byte T_ADDRESS[6] = "1RF24";
 const int Addresses[2] = {LOWER_MPU_ADR, UPPER_MPU_ADR};
 
 // The MPUs' ADO pins to tune the addresses
-#define LOWER_MPU_ADO 2                     // This shouldn't be powered -> ADR = 0x68
-#define UPPER_MPU_ADO 3                     // This should be powered -> ADR = 0x69
+#define UPPER_MPU_ADO 2                     // This shouldn't be powered -> ADR = 0x68
+#define LOWER_MPU_ADO 3                     // This should be powered -> ADR = 0x69
 
 const short MPUsAmount = 2;
 const short AxisAmount = 3;
@@ -73,9 +73,9 @@ void setup() {
     Serial.println("[AR]-< Started initialization");
     pinMode(UPPER_MPU_ADO, OUTPUT);
     pinMode(LOWER_MPU_ADO, OUTPUT);
-    // Muting one of the MPUs for initializing
-    digitalWrite(UPPER_MPU_ADO, HIGH);
-    digitalWrite(LOWER_MPU_ADO, LOW);
+    // Muting one of the MPUs for correct initializing
+    digitalWrite(UPPER_MPU_ADO, LOW);
+    digitalWrite(LOWER_MPU_ADO, HIGH);
 
     // Initializing and calibrating the active MPU module
     Wire.begin();
