@@ -58,7 +58,7 @@ float GyroBiases[MPUsAmount][AxisAmount];   // To reduce small drifts (low-pass)
 int16_t JYAxisInput;
 bool ButtonPressed;
 
-#define TIMEOUT 1000
+#define TIMEOUT 10
 
 void InitMPU(uint8_t);
 void GetAngles(uint8_t, int16_t[3], bool);
@@ -127,6 +127,7 @@ void loop() {
     TransArr[4] = UpperAngles[1];
     TransArr[5] = UpperAngles[2];
 
+    // Reading joystick's values
     JYAxisInput = analogRead(J_PIN_Y);
     ButtonPressed = analogRead(J_PIN_B) <= 100;
 
@@ -134,7 +135,7 @@ void loop() {
     TransArr[7] = ButtonPressed;
 
     PrintData();
-    // Writing one (first) byte to the radio channel
+    // Sending the data array to the radio channel
     if (Transmitter.write(&TransArr, sizeof(TransArr), false)) {
         Serial.println("Data sent");
     }
