@@ -8,19 +8,19 @@
 #define CSN_PIN 8
 
 RF24 Receiver(CE_PIN, CSN_PIN);
-const byte R_ADDRESS[6] = "1RF24";
-
-byte JTransfer[2];
+const byte R_ADDRESS[11] = "TRF24_ADDR";
 
 const int AxisAmount = 3;
 // Arrays for ouput angles
-uint16_t UpperAngles[AxisAmount];  // The angles of upper arm
-uint16_t LowerAngles[AxisAmount];  // The angles of underarm
+int16_t UpperAngles[AxisAmount];  // The angles of upper arm
+int16_t LowerAngles[AxisAmount];  // The angles of underarm
 
-uint16_t JYAxisInput;
+int16_t JYAxisInput;
 bool ButtonPressed;
 
-int16_t TransArr[3];
+int16_t TransArr[8];
+
+#define TIMEOUT 1000
 
 void PrintData();
 
@@ -39,7 +39,7 @@ void setup() {
     Receiver.setChannel(88);
     // Setting transmission's properties
     Receiver.setPayloadSize(sizeof(TransArr));
-    Receiver.setAutoAck(false);
+    Receiver.setAutoAck(true);
     // Setting the receiver to retrieve data
     Receiver.openReadingPipe(0, R_ADDRESS);
     Receiver.startListening();
@@ -55,16 +55,16 @@ void loop() {
         LowerAngles[1] = TransArr[1];
         LowerAngles[2] = TransArr[2];
 
-        LowerAngles[3] = TransArr[3];
-        LowerAngles[4] = TransArr[4];
-        LowerAngles[5] = TransArr[5];
+        UpperAngles[0] = TransArr[3];
+        UpperAngles[1] = TransArr[4];
+        UpperAngles[2] = TransArr[5];
 
         JYAxisInput = TransArr[6];
         ButtonPressed = TransArr[7];
 
         PrintData();
 
-        delay(1000);
+        delay(TIMEOUT);
     }
 }
 

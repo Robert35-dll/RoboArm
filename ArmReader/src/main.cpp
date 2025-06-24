@@ -14,7 +14,10 @@
 #define CSN_PIN 8
 
 RF24 Transmitter(CE_PIN, CSN_PIN);
-const byte T_ADDRESS[6] = "1RF24";
+const byte T_ADDRESS[11] = "TRF24_ADDR";
+
+// The data transfer array
+int16_t TransArr[8];
 
 // MPU6050s' preparation
 #include <Wire.h>
@@ -38,8 +41,8 @@ float Rots[MPUsAmount][AxisAmount];
 float AccAngs[MPUsAmount][AxisAmount];
 
 // Arrays for ouput angles
-int16_t UpperAngles[AxisAmount];                // The angles of upper arm
-int16_t LowerAngles[AxisAmount];                // The angles of underarm
+int16_t UpperAngles[AxisAmount];            // The angles of upper arm
+int16_t LowerAngles[AxisAmount];            // The angles of underarm
 
 // Correction variables
 float AccMagnitude;                         // To determine whether MPU is moving or not
@@ -47,18 +50,15 @@ float Alphas[MPUsAmount];                   // To adjust acc/gyro influence upon
 float GyroCorrs[MPUsAmount][AxisAmount];    // To allow fast rotations (high-pass)
 float GyroBiases[MPUsAmount][AxisAmount];   // To reduce small drifts (low-pass)
 
-#define TIMEOUT 10
-
 // The joystick's vertical axis' pin
 #define J_PIN_Y A1
 // The joystick's toggle button pin
 #define J_PIN_B A0
 
-uint16_t JYAxisInput;
+int16_t JYAxisInput;
 bool ButtonPressed;
 
-// The data transfer array
-int16_t TransArr[8];
+#define TIMEOUT 1000
 
 void InitMPU(uint8_t);
 void GetAngles(uint8_t, int16_t[3], bool);
@@ -103,7 +103,7 @@ void setup() {
     Transmitter.setChannel(88);
     // Setting transmission's properties
     Transmitter.setPayloadSize(sizeof(TransArr));
-    Transmitter.setAutoAck(false);
+    Transmitter.setAutoAck(true);
     // Setting an amount and delay to retry failed transmissions
     Transmitter.setRetries(5, 3);
     // Setting the transmitter to send data
@@ -123,9 +123,9 @@ void loop() {
 
     GetAngles(1, UpperAngles, true);
 
-    TransArr[3] = LowerAngles[0];
-    TransArr[4] = LowerAngles[1];
-    TransArr[5] = LowerAngles[2];
+    TransArr[3] = UpperAngles[0];
+    TransArr[4] = UpperAngles[1];
+    TransArr[5] = UpperAngles[2];
 
     JYAxisInput = analogRead(J_PIN_Y);
     ButtonPressed = analogRead(J_PIN_B) <= 100;
@@ -135,7 +135,7 @@ void loop() {
 
     PrintData();
     // Writing one (first) byte to the radio channel
-    if (Transmitter.write(&TransArr, sizeof(TransArr) * 2)) {
+    if (Transmitter.write(&TransArr, sizeof(TransArr), false)) {
         Serial.println("Data sent");
     }
 
