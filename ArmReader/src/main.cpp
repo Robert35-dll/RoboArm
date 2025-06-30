@@ -43,6 +43,8 @@ float AccAngs[MPUsAmount][AxisAmount];
 // Arrays for ouput angles
 int16_t UpperAngles[AxisAmount];            // The angles of upper arm
 int16_t LowerAngles[AxisAmount];            // The angles of underarm
+int16_t UpperOffsets[AxisAmount];           // The initial angles of upper arm
+int16_t LowerOffsets[AxisAmount];           // The initial angles of underarm
 
 // Correction variables
 float AccMagnitude;                         // To determine whether MPU is moving or not
@@ -58,6 +60,7 @@ int16_t JYAxisInput;
 #define TIMEOUT 10
 
 void InitMPU(uint8_t);
+void SetOffsets(uint8_t, int16_t[3]);
 void GetAngles(uint8_t, int16_t[3], bool);
 void CorrectAngles(uint8_t, int16_t[3]);
 void GetRawAccelerations(uint8_t);
@@ -79,9 +82,11 @@ void setup() {
 
     Serial.println("[*]-< Initializing LowerMPU monitoring object");
     InitMPU(LOWER_MPU_ADR);
+    SetOffsets(LOWER_MPU_ADR, LowerOffsets);
 
     Serial.println("[*]-< Initializing UpperMPU monitoring object");
     InitMPU(UPPER_MPU_ADR);
+    SetOffsets(UPPER_MPU_ADR, UpperOffsets);
 
     // Joystick setup
     pinMode(J_PIN_Y, INPUT);
@@ -113,15 +118,15 @@ void loop() {
     // Reading angles of the arm
     GetAngles(0, LowerAngles, true);
 
-    TransArr[0] = LowerAngles[0];
-    TransArr[1] = LowerAngles[1];
-    TransArr[2] = LowerAngles[2];
+    TransArr[0] = LowerAngles[0] + LowerOffsets[0];
+    TransArr[1] = LowerAngles[1] + LowerOffsets[1];
+    TransArr[2] = LowerAngles[2] + LowerOffsets[2];
 
     GetAngles(1, UpperAngles, true);
 
-    TransArr[3] = UpperAngles[0];
-    TransArr[4] = UpperAngles[1];
-    TransArr[5] = UpperAngles[2];
+    TransArr[3] = UpperAngles[0] + UpperOffsets[0];
+    TransArr[4] = UpperAngles[1] + UpperOffsets[1];
+    TransArr[5] = UpperAngles[2] + UpperOffsets[2];
 
     // Reading joystick's values
     JYAxisInput = analogRead(J_PIN_Y);
@@ -144,6 +149,16 @@ void InitMPU(uint8_t adr) {
     Wire.write(0x00);
     // End the transmission with a stop message
     Wire.endTransmission(true);
+}
+void SetOffsets(uint8_t adr, int16_t (offArr)[3]) {
+    Serial.println("Calculating offsets. Don't move the MPU!");
+
+    for (int i = 0; i < 300; i++) {
+        GetAngles(adr, offArr, true);
+        delay(TIMEOUT);
+    }
+
+    Serial.println("Finished calculating offsets!");
 }
 
 /// @brief Calculates rotation angles of a certain MPU module.
