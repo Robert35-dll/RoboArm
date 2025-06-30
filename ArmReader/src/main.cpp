@@ -17,7 +17,7 @@ RF24 Transmitter(CE_PIN, CSN_PIN);
 const byte T_ADDRESS[11] = "TRF24_ADDR";
 
 // The data transfer array
-int16_t TransArr[8];
+int16_t TransArr[7];
 
 // MPU6050s' preparation
 #include <Wire.h>
@@ -52,11 +52,8 @@ float GyroBiases[MPUsAmount][AxisAmount];   // To reduce small drifts (low-pass)
 
 // The joystick's vertical axis' pin
 #define J_PIN_Y A1
-// The joystick's toggle button pin
-#define J_PIN_B A0
 
 int16_t JYAxisInput;
-bool ButtonPressed;
 
 #define TIMEOUT 10
 
@@ -88,7 +85,6 @@ void setup() {
 
     // Joystick setup
     pinMode(J_PIN_Y, INPUT);
-    pinMode(J_PIN_B, INPUT);
 
     // Transmitter setup
     if (!Transmitter.begin()) {
@@ -129,10 +125,8 @@ void loop() {
 
     // Reading joystick's values
     JYAxisInput = analogRead(J_PIN_Y);
-    ButtonPressed = analogRead(J_PIN_B) <= 100;
 
     TransArr[6] = JYAxisInput;
-    TransArr[7] = ButtonPressed;
 
     PrintData();
     // Sending the data array to the radio channel
@@ -245,7 +239,5 @@ void PrintData() {
 
     Serial.print("[+]-< Joystick Y-axis input: ");
     Serial.println(JYAxisInput);
-    Serial.print("[+]-< Joystick button signal: ");
-    Serial.println(ButtonPressed);
     Serial.println(" |");
 }
