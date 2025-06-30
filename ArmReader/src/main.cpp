@@ -23,8 +23,8 @@ int16_t TransArr[7];
 #include <Wire.h>
 
 // The MPUs' addresses to read I2C data from 
-#define LOWER_MPU_ADR 0x68                  // This is standard address
-#define UPPER_MPU_ADR 0x69                  // and this is modified
+#define LOWER_MPU_ADR 0x69                  // This is standard address
+#define UPPER_MPU_ADR 0x68                  // and this is modified
 
 const int Addresses[2] = {LOWER_MPU_ADR, UPPER_MPU_ADR};
 

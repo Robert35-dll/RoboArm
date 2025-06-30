@@ -51,6 +51,7 @@ void setup() {
     Serial.begin(9600);
     
     for (int i = 0; i < ServosAmount; i++) {
+        pinMode(ServoPins[i], OUTPUT);
         Servos[i].attach(ServoPins[i]);
         Servos[i].write(StartAngle);
     }
