@@ -82,11 +82,17 @@ void setup() {
 
     Serial.println("[*]-< Initializing LowerMPU monitoring object");
     InitMPU(LOWER_MPU_ADR);
-    SetOffsets(LOWER_MPU_ADR, LowerOffsets);
+    SetOffsets(0, LowerAngles);
+    LowerOffsets[0] = LowerAngles[0];
+    LowerOffsets[1] = LowerAngles[1];
+    LowerOffsets[2] = LowerAngles[2];
 
     Serial.println("[*]-< Initializing UpperMPU monitoring object");
     InitMPU(UPPER_MPU_ADR);
-    SetOffsets(UPPER_MPU_ADR, UpperOffsets);
+    SetOffsets(1, UpperAngles);
+    UpperOffsets[0] = UpperAngles[0];
+    UpperOffsets[1] = UpperAngles[1];
+    UpperOffsets[2] = UpperAngles[2];
 
     // Joystick setup
     pinMode(J_PIN_Y, INPUT);
@@ -118,15 +124,15 @@ void loop() {
     // Reading angles of the arm
     GetAngles(0, LowerAngles, true);
 
-    TransArr[0] = LowerAngles[0] + LowerOffsets[0];
-    TransArr[1] = LowerAngles[1] + LowerOffsets[1];
-    TransArr[2] = LowerAngles[2] + LowerOffsets[2];
+    TransArr[0] = LowerAngles[0] - LowerOffsets[0];
+    TransArr[1] = LowerAngles[1] - LowerOffsets[1];
+    TransArr[2] = LowerAngles[2] - LowerOffsets[2];
 
     GetAngles(1, UpperAngles, true);
 
-    TransArr[3] = UpperAngles[0] + UpperOffsets[0];
-    TransArr[4] = UpperAngles[1] + UpperOffsets[1];
-    TransArr[5] = UpperAngles[2] + UpperOffsets[2];
+    TransArr[3] = UpperAngles[0] - UpperOffsets[0];
+    TransArr[4] = UpperAngles[1] - UpperOffsets[1];
+    TransArr[5] = UpperAngles[2] - UpperOffsets[2];
 
     // Reading joystick's values
     JYAxisInput = analogRead(J_PIN_Y);
@@ -150,15 +156,21 @@ void InitMPU(uint8_t adr) {
     // End the transmission with a stop message
     Wire.endTransmission(true);
 }
-void SetOffsets(uint8_t adr, int16_t (offArr)[3]) {
+void SetOffsets(uint8_t mpuNum, int16_t (offArr)[3]) {
     Serial.println("Calculating offsets. Don't move the MPU!");
 
-    for (int i = 0; i < 300; i++) {
-        GetAngles(adr, offArr, true);
+    for (int i = 0; i < 1200; i++) {
+        GetAngles(mpuNum, offArr, true);
         delay(TIMEOUT);
     }
 
     Serial.println("Finished calculating offsets!");
+    Serial.print("X: ");
+    Serial.print(offArr[0]);
+    Serial.print(" Y: ");
+    Serial.print(offArr[1]);
+    Serial.print(" Z: ");
+    Serial.println(offArr[2]);
 }
 
 /// @brief Calculates rotation angles of a certain MPU module.
@@ -237,22 +249,22 @@ void GetRawRotations(uint8_t mpuNum) {
 void PrintData() {
     Serial.print("[+]-< Upper MPU angles: ");
     Serial.print("X: ");
-    Serial.print(UpperAngles[0]);
+    Serial.print(TransArr[0]);
     Serial.print(" Y: ");
-    Serial.print(UpperAngles[1]);
+    Serial.print(TransArr[1]);
     Serial.print(" Z: ");
-    Serial.println(UpperAngles[2]);
+    Serial.println(TransArr[2]);
 
     Serial.print("[+]-< Lower MPU angles: ");
     Serial.print("X: ");
-    Serial.print(LowerAngles[0]);
+    Serial.print(TransArr[3]);
     Serial.print(" Y: ");
-    Serial.print(LowerAngles[1]);
+    Serial.print(TransArr[4]);
     Serial.print(" Z: ");
-    Serial.println(LowerAngles[2]);
+    Serial.println(TransArr[5]);
     Serial.println(" |");
 
     Serial.print("[+]-< Joystick Y-axis input: ");
     Serial.println(JYAxisInput);
-    Serial.println(" |");
+     Serial.println(" |");
 }
