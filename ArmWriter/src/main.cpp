@@ -30,19 +30,13 @@ int16_t JYAxisInput;
 #define EL_PIN 9                    // Pin for elbow's bend
 #define HA_PIN 10                   // Pin for hand's rotation along under arm
 
-const int ServosAmount = 5;
-const int ServoPins[ServosAmount] = {
-    SX_PIN,
-    SY_PIN,
-    SZ_PIN,
-    EL_PIN,
-    HA_PIN
-};
-Servo Servos[ServosAmount];
+Servo SX;
+Servo SY;
+Servo SZ;
+Servo EL;
+Servo HA;
 
-const int StartAngle = 90;
-
-#define TIMEOUT 10
+#define TIMEOUT 1000
 
 void SetAngles();
 void PrintData();
@@ -50,11 +44,24 @@ void PrintData();
 void setup() {
     Serial.begin(9600);
     
-    for (int i = 0; i < ServosAmount; i++) {
-        pinMode(ServoPins[i], OUTPUT);
-        Servos[i].attach(ServoPins[i]);
-        Servos[i].write(StartAngle);
-    }
+    pinMode(SX_PIN, OUTPUT);
+    pinMode(SY_PIN, OUTPUT);
+    pinMode(SZ_PIN, OUTPUT);
+    pinMode(EL_PIN, OUTPUT);
+    pinMode(HA_PIN, OUTPUT);
+
+    SX.attach(SY_PIN);
+    SY.attach(SX_PIN);
+    SZ.attach(SZ_PIN);
+    EL.attach(EL_PIN);
+    HA.attach(HA_PIN);
+    
+    SX.write(90);
+    SY.write(90);
+    SZ.write(0);
+    EL.write(0);
+    HA.write(0);
+
     Serial.println("[*]-< Servos assigned to pins ^~^");
     
     if (!Receiver.begin()) {
@@ -81,15 +88,15 @@ void loop() {
     if (Receiver.available() > 0) {
         Receiver.read(&TransArr, sizeof(TransArr) * 2);
 
-        LowerAngles[0] = TransArr[0];
-        LowerAngles[1] = TransArr[1];
-        LowerAngles[2] = TransArr[2];
+        LowerAngles[0] = map(TransArr[0], -180, 180, 0, 180);
+        LowerAngles[1] = map(TransArr[1], -180, 180, 0, 180);
+        LowerAngles[2] = map(TransArr[2], -180, 180, 0, 180);
 
-        UpperAngles[0] = TransArr[3];
-        UpperAngles[1] = TransArr[4];
-        UpperAngles[2] = TransArr[5];
+        UpperAngles[0] = map(TransArr[3], -180, 180, 0, 180);
+        UpperAngles[1] = map(TransArr[4], -180, 180, 0, 180);
+        UpperAngles[2] = map(TransArr[5], -180, 180, 0, 180);
 
-        JYAxisInput = TransArr[6];
+        JYAxisInput = map(TransArr[6], 0, 1023, 0, 180);
 
         PrintData();
 
@@ -101,13 +108,13 @@ void loop() {
 
 void SetAngles() {
     // Adjusting position of the shoulder 
-    for (int i = 0; i < 3; i++) {
-        Servos[i].write(StartAngle + UpperAngles[i]);
-    }
+    SX.write(UpperAngles[0]);
+    SY.write(UpperAngles[1]);
+    SZ.write(UpperAngles[2]);
     // Adjusting position of the elbow
-    Servos[3].write(StartAngle + LowerAngles[3]);
+    EL.write(LowerAngles[0]);
     // Adjusting position of the hand
-    Servos[4].write(map(JYAxisInput, 0, 1023, 0, 180));
+    HA.write(JYAxisInput);
 }
 
 void PrintData() {
