@@ -49,19 +49,7 @@ Wenn dein PlatformIO noch keine Teilprojekte erkannt hat, musst du ihm selber di
 5) Anschließend kannst du beide Projekte kompilieren lassen und prüfen, ob alles geklappt hat
 
 ## Aufbau
-### Das brauchst du für deinen eigenen Arm
-|Bauteil|Anzahl|
-|:-----:|:----:|
-| Arduino Nano | x1 |
-| PU6050 Gyroskop | x2 |
-| nRF24 Radiomodul | x1 |
-| Joystick | x1 |
-| (Jumper-)Kabeln | viel |
-
-_Hinweis: Jumperkabeln eignen sich gut für einen (ersten) Testaufbau._
-
-### Das brauchst du für deinen Roboterarm
-Kommt demnächst :3
+Siehe [BuildTutorial.md](BuildTutorial.md)
 
 ## Architektur
 Das gesamte Projekt besteht aus zwei Subsystemen: `ArmReader` und `ArmWriter`. Diese kommunizieren mittels eines Radiokanals, wobei `ArmReader` als Sender und `ArmWriter` als Empfänger funktionieren. Das einzige zu übertragende Objekt ist ein Array mit Winkeln und 
