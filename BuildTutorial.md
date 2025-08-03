@@ -36,9 +36,8 @@ Während du etwas baust, stelle sicher, dass:
 Als Spannungsquelle kannst du eine oder mehrere Batterien verwenden. Ich empfehle aber, Akkus zu nutzen. Diese kannst du entweder direkt an das Arduino anschließen oder (_sehr empfohlen_) durch ein Adapter.
 
 Die o.g. Komponenten verbinde wie auf dem folgenden Plan dargestellt:
-
-<div style="text-align: center;">
-<img src="Resources\Breadboard_Nano.png" width=70% >
+<div align="center">
+    <img src="Resources\Breadboard_Nano.png" width=70% alt-text="Steckbrett ArmReader"/>
 </div>
 
 ## Das brauchst du für deinen Roboterarm
@@ -58,11 +57,13 @@ Aktuell sind Servos nur für die Schulter, Ellbogen und Unterarm gedacht. Option
 Je nach den ausgewählten Servos wird dein Roboterarm entweder nur seine Hand hochheben, oder sogar irgendwelche Gegenstände halten können.
 
 Die o.g. Komponenten verbinde wie auf dem folgenden Plan dargestellt:
-<div style="text-align: center;">
-<img src="Resources\Breadboard_Uno.png" width=70% >
+<div align="center">
+    <img src="Resources\Breadboard_Uno.png" width=70% alt-text="Steckbrett ArmWriter"/>
 </div>
 
 ## Fotos
 Hier sind die Fotos von meinem Roboterarm mit zwei zusätzlichen Servos für Griffgelenke:
 
-<img src="Resources\Build_ArmWriter_Back.png" height=600 width=50%/><img src="Resources\Build_ArmWriter_Front.png" height=600 width=50%/>
+<div align=center>
+    <img src="Resources\Build_ArmWriter_Back.png" height=600 width=50% alt-text="Aufgebauter Roboterarm - Hinten"/><img src="Resources\Build_ArmWriter_Front.png" height=600 width=50% alt-text="Aufgebauter Roboterarm - Vorne"/>
+</div>
