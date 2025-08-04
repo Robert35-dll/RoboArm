@@ -98,6 +98,26 @@ Die meisten Stellen wurden ziemlich umfangreich kommentiert. Zum tieferen Einbli
 In diesem Abschnitt werden unterschiedliche theoretische Kenntnisse aufgeschrieben, die ich während des Projekts kennengelernt habe.
 
 ### I2C-Protokoll
+I2C steht für **Inter-Integrated Circuit** und wird hauptsächlich benutzt, um mehrere Peripheriegeräte mit wenigen Kabeln an einen Mikrocontroller anzuschließen. Dies wird durch zwei zentrale "Kommunikationsbände" ermöglicht:
+- **Serial Data (_SDA_)** - für die tatsächliche Datenübertragung
+- **Serial Clock (_SCL_)** - für die Synchronisation dieser Datenübertragung zwischen Sendern und Empfängern
+
+sowie die Angabe von **einzigartigen IDs** für jedes Gerät.
+
+_Wichtige Bemerkung: Falls zwei Geräten das gleiche ID von Herstellern gegeben wurden, muss ein davon vor der Initialisierung der Kommunikation geändert werden! Mehr dazu im Abschnitt von [Wire Bibliothek](#wire-bibliothek)._
+
+Die entsprechende Pins gibt es auf allen Arduino Boards. Arduino GIGA hat sogar mehrere SDA / SCL Pins.
+
+Mehr zum Thema in der [Arduino I2C Dokumentation](https://docs.arduino.cc/learn/communication/wire/#what-is-i2c).
+
+#### Wire Bibliothek
+Arduino hat die **Wire Bibliothek** vorbereitet, die manche technische grundlegende Operationen übernimmt. Von gängigen Methoden sind:
+- `begin() / end()` - um einen I2C Bus zu initialisieren / auflösen
+- `begin- / endTransmission()` - um einzelne Datenübertragung zu starten / beenden
+- `write()` - um Daten auf den Bus zu schreiben oder reserviert Bytes für die nächste Übertragung
+- `read()` - um den nächsten Byte von Daten aus dem Bus zu lesen
+
+Die originale [Dokumentation von Arduino](https://docs.arduino.cc/language-reference/en/functions/communication/wire/?_gl=1*ss306l*_up*MQ..*_ga*MjA4NzcxNjI3Ni4xNzU0MTQ4ODMy*_ga_NEXN8H46L5*czE3NTQxNDg4MzEkbzEkZzAkdDE3NTQxNDg4MzEkajYwJGwwJGg0MDg1ODI0MTk.#functions) wird einem Anfänger nicht viel bei, deswegen empfehle ich sehr, selbständig Beispiele zu finden und daraus zu lernen :)
 
 ### Regelungstechnische Grundlagen
 
