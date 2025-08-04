@@ -19,7 +19,7 @@ Konkret für dieses Projekt habe ich entschieden, mit meinem eigenen Arm einen R
 Dieses Projekt wurde im VS Code mithilfe PlatformIO Extension entwickelt. Alternativ kannst du auch in nativem ArduinoIDE arbeiten. Um den Code auf dein PC zu haben tuh bitte folgendes:
 
 1) Klone dieses Repository auf dein PC mit `git clone https://github.com/Robert35-dll/RoboArm.git`
-2) Öffne den heruntergeladenen Ordner in deinem IDE.
+2) Öffne den heruntergeladenen Ordner in deinem IDE
    - _Optional: öffne das `code-workspace` Datei, um in VS Code schneller zwischen Teilprojekten zu wechseln_
 
 An dieser Stelle solltest du die Ordnerstruktur vom Projekt sehen:
@@ -47,7 +47,8 @@ An dieser Stelle solltest du die Ordnerstruktur vom Projekt sehen:
   |-< README.md
 ```
 
-Wenn dein PlatformIO noch keine Teilprojekte erkannt hat, musst du ihm selber die Pfade von `ArmReader` und `ArmWriter` Ordnern (_nicht von main.cpp Dateien_) zeigen. Wenn beide Teilprojekte erkannt werden, installiere die notwendige Bibliotheken:
+Wenn dein PlatformIO bzw. ArduinoIDE noch keine Teilprojekte erkannt hat, musst du selber die Pfade von `ArmReader` und `ArmWriter` Ordnern (_nicht von main.cpp Dateien_) öffnen / angeben.
+Wenn beide Teilprojekte erkannt werden, installiere die notwendige Bibliotheken:
 
 3) Öffne das `ArmReader` Projekt und installiere `RF24` Bibliothek
 4) Öffne das `ArmWriter` Projekt und installiere `RF24` und `Servo` Bibliotheken
@@ -64,7 +65,9 @@ Das gesamte Projekt besteht aus zwei Subsystemen:
 Diese kommunizieren mittels eines Funkkanals, wobei `ArmReader` als Sender und `ArmWriter` als Empfänger funktionieren. Das einzige zu übertragende Objekt ist ein Array mit gemessenen Winkeln und dem Signal vom Joystick.
 Im folgendem PAP sind die grundsätzliche Aktivitäten jeweiliges Systems vereinfacht abgebildet:
 
-![Architektur und Programmablaufplan](Resources\PAP.png)
+<div align="center">
+    <img src="Resources\PAP.png" width=70% alt-text="Architektur und Programmablaufplan"/>
+</div>
 
 ## Code
 Die zwei zentrale Codedateien sind die jeweiligen `main.cpp` Dateien in folgenden Ordnern:
