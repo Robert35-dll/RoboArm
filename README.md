@@ -13,6 +13,7 @@ Konkret für dieses Projekt habe ich entschieden, mit meinem eigenen Arm einen R
 - [Theorie](#theorie)
   - [I2C-Protokoll](#i2c-protokoll)
   - [Regelungstechnische Grundlagen](#regelungstechnische-grundlagen)
+  - [Accelerometer vs Gyroskop](#accelerometer-vs-gyroskop)
   - [Radiokommunikation](#radiokommunikation)
 
 ## Installation
@@ -120,6 +121,37 @@ Arduino hat die **Wire Bibliothek** vorbereitet, die manche technische grundlege
 Die originale [Dokumentation von Arduino](https://docs.arduino.cc/language-reference/en/functions/communication/wire/?_gl=1*ss306l*_up*MQ..*_ga*MjA4NzcxNjI3Ni4xNzU0MTQ4ODMy*_ga_NEXN8H46L5*czE3NTQxNDg4MzEkbzEkZzAkdDE3NTQxNDg4MzEkajYwJGwwJGg0MDg1ODI0MTk.#functions) wird einem Anfänger nicht viel bei, deswegen empfehle ich sehr, selbständig Beispiele zu finden und daraus zu lernen :)
 
 ### Regelungstechnische Grundlagen
+Um die gemessene Winkeln zu korrigieren, wurde ein Komplementär Filter implementiert, für den drei verschiedene Techniken eingesetzt wurden:
+1) Dynamische Alpha-Korrektur - um Einflüsse von [Accelerometer und Gyroskop](#accelerometer-vs-gyroskop) bei der Winkelberechnung dynamisch anzupassen:
+```C++
+  Alpha = abs(AccMagnitude - 1.0) > 0.1 ? 0.02 : 0.045;
+```
+2) High-Pass-Filter - um rasante Lageänderungen zu dämpfen:
+```C++
+  GyroCorrection = (PreviousAngle - AccelerometerAngle) * 0.8;
+```
+3) Bias-Korrektur (Low-Pass-Filter) - um langfristige Drifts zu vermindern:
+```C++
+  GyroBias += GyroAngle * 0.0001;
+```
+
+Letztendlich sind alle drei Teilberechnungen in der Formel für Komplementär Filter benutzt worden:
+```C++
+  CorrectedAngle = Alpha * (PreviousAngle + (GyroAngle - GyroBias) * milliseconds)
+                 + (1 - Alpha) * (AccelerometerAngle + GyroCorrection);
+```
+
+Mehr zum Thema in [meinem Chat mit Copilot](https://copilot.microsoft.com/shares/UibQJuqRkmj2sEJwEYquv).
+
+### Accelerometer vs Gyroskop
+Die MPU6050 Module verfügen gleichzeitig über einen Accelerometer und einen Gyroskop die ebenfalls gleichzeitig zur Messung von Winkeln und daher Bestimmung der Lage verwendet werden können.
+Der Unterschied zwischen den beiden Mechanismen kann _grob vereinfacht_ so interpretiert werden:
+- **Accelerometer** - bestimmt **die Winkeln** mit Referenz zur Erdbeschleunigung
+- **Gyroskop** - bestimmt **die Winkelgeschwindigkeiten** mit Referenz zur letzten stabilen Lage
+
+Daher macht es meistens Sinn, beide Geräte gleichzeitig zu verwenden, um die Messgenauigkeit zu erhöhen.
+
+Mehr zum Thema in [diesem Artikel](https://lastminuteengineers.com/mpu6050-accel-gyro-arduino-tutorial/#:~:text=The%20MPU6050%20module%E2%80%99s%20pinout%20is%20as%20follows%3A%20VCC,interface.%20XDA%20is%20the%20external%20I2C%20data%20line.) von Last Minute Engineers.
 
 ### Radiokommunikation
 
