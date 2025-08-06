@@ -122,7 +122,7 @@ Die originale [Dokumentation von Arduino](https://docs.arduino.cc/language-refer
 
 ### Regelungstechnische Grundlagen
 Um die gemessene Winkeln zu korrigieren, wurde ein Komplementär Filter implementiert, für den drei verschiedene Techniken eingesetzt wurden:
-1) Dynamische Alpha-Korrektur - um Einflüsse von [Accelerometer und Gyroskop](#accelerometer-vs-gyroskop) bei der Winkelberechnung dynamisch anzupassen:
+1) Dynamische Alpha-Korrektur - um Einflüsse von [Accelerometer und Gyroskop](#accelerometer-vs-gyroskop) bei der Winkelberechnung abhängig von der Amplitude dynamisch anzupassen:
 ```C++
   Alpha = abs(AccMagnitude - 1.0) > 0.1 ? 0.02 : 0.045;
 ```
@@ -154,4 +154,17 @@ Daher macht es meistens Sinn, beide Geräte gleichzeitig zu verwenden, um die Me
 Mehr zum Thema in [diesem Artikel](https://lastminuteengineers.com/mpu6050-accel-gyro-arduino-tutorial/#:~:text=The%20MPU6050%20module%E2%80%99s%20pinout%20is%20as%20follows%3A%20VCC,interface.%20XDA%20is%20the%20external%20I2C%20data%20line.) von Last Minute Engineers.
 
 ### Radiokommunikation
+Für eine Funkverbindung reichen gut die nRF24L01 Module mit eigener `RF24` Bibliothek aus. Diese werden per SPI Protokoll mit weiteren "Kommunikationsbändern" an den Mikrocontroller angeschlossen:
+- **Master In - Slave Out (MISO)** - für die Datenübertragung von Peripheriegeräten (_ggf. nRF24_) zum Controller
+- **Master Out - Slave In (MOSI)** - für die Datenübertragung vom Controller zu den Peripheriegeräten (_ggf. nRF24_)
+- **Serial Clock (SCL)** - für die Synchronisation dieser Datenübertragung zwischen Sendern und Empfängern (_das gleiche wie bei [I2C Protokoll](#i2c-protokoll)_)
+- **Chip Select (CS / CSN)** - für den Auswahl eines Peripheriegeräts (_ggf. nur eines nRF24_) zur nächsten Kommunikation
+- **Chip Enable (CE)** - für die Aktivierung eines Peripheriegeräts (_ggf. nRF24_)
 
+Mit der `nRF24` Bibliothek kann ein Funkkanal (_Datenrate, Kanal, Puffergröße, etc._) genau eingestellt werden. Hier sind paar Hinweise zur Anwendung:
+- Die Einstellungen sollten einzigartig für den Anwendungsraum sein, um die Störungen durch andere Funkgeräte zu vermeiden.
+- Alle Daten (_bis zu 32 Bytes standardmäßig_) werden mit der ´write()´ Methode byteweise ohne implizite Umwandlung geschickt. Die überschüssige Bytes werden beim Senden ignoriert!
+
+Mehr zum nRF24L01 Modul in [diesem Tutorial](https://wolles-elektronikkiste.de/nrf24l01-2-4-ghz-funkmodule) vom Wolles Elektronikkiste.
+
+Mehr zum Thema SPI in [diesem Artikel](https://www.analog.com/en/resources/analog-dialogue/articles/introduction-to-spi-interface.html) von Analog Dialogue.
